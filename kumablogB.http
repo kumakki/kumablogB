@@ -1,0 +1,6 @@
+@kumablogB_HostAddress = http://localhost:5138
+
+GET {{kumablogB_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
