@@ -4,6 +4,7 @@
     user_name TEXT NOT NULL,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
+    profile TEXT,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     deleted_at timestamptz
