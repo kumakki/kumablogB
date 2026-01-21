@@ -93,7 +93,7 @@ public class UserService
 
         string newUserId = $"user_{Guid.NewGuid().ToString()}";
 
-        string hashedPassword = _auth.HashPassword(cur.Password);
+        string hashedPassword = await _auth.HashPassword(cur.Password);
 
         user = new Users
         {

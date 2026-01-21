@@ -33,7 +33,7 @@ namespace kumablogB.Services
                 return result;
             }
 
-            string hashedPassword = HashPassword(password);
+            string hashedPassword = await HashPassword(password);
 
             if (user.Password != hashedPassword)
             {
@@ -59,21 +59,24 @@ namespace kumablogB.Services
             return result;
         }
 
-        public string HashPassword(string password)
+        public async Task<string> HashPassword(string password)
         {
-            char[] chars = password.ToCharArray();
-            double[] ritsu = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0];
-            int[] keta = [2, 3, 3, 3, 4, 4, 4, 4, 5];
             string hashed = "";
-            for (int i = 0; i < ritsu.Length; i++)
+            await Task.Run(() =>
             {
-                int sum = 0;
-                foreach (char c in chars)
+                char[] chars = password.ToCharArray();
+                double[] ritsu = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0];
+                int[] keta = [2, 3, 3, 3, 4, 4, 4, 4, 5];
+                for (int i = 0; i < ritsu.Length; i++)
                 {
-                    sum += (int)Math.Pow((double)c, ritsu[i]);
+                    int sum = 0;
+                    foreach (char c in chars)
+                    {
+                        sum += (int)Math.Pow((double)c, ritsu[i]);
+                    }
+                    hashed += sum.ToString("X").Substring(0, keta[i]);
                 }
-                hashed += sum.ToString("X").Substring(0, keta[i]);
-            }
+            });
             return hashed;
         }
     }
