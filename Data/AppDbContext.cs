@@ -13,5 +13,6 @@ public class AppDbContext : DbContext
     // 例：ブログ記事テーブル
     public DbSet<Users> Users { get; set; }
     public DbSet<Blogs> Blogs { get; set; }
+    public DbSet<Sessions> Sessions { get; set; }
 }
 
