@@ -1,0 +1,5 @@
+﻿CREATE TABLE sessions (
+    auth_token TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);

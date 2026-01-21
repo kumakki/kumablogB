@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace kumablogB.Controllers;
 
 [ApiController]
-[Route("api/Users")]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
     private readonly UserService _service;
@@ -16,10 +16,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllUsers()
     {
         List<Users>? users = await _service.GetAllUsersAsync();
         if (users == null || users.Count == 0) return NotFound("No users found.");
         return Ok(users);
     }
+
 }
