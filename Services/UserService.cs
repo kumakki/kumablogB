@@ -15,50 +15,80 @@ public class UserService
         _auth = auth;
     }
 
-    public async Task<ServiceResult<List<Users>>> GetAllUsersAsync()
+    public async Task<ServiceResult<List<UserResult>>> GetAllUsersAsync()
     {
-        ServiceResult<List<Users>> result = new()
-        {
-            Data = await _db.Users.ToListAsync()
-        };
+        ServiceResult<List<UserResult>> result = new();
+        result.Data = new List<UserResult>();
 
-        if (result.Data.Count == 0)
+        List<Users> users = await _db.Users.ToListAsync();
+        
+        if (users.Count == 0)
         {
             result.Success = false;
             result.Error = "No users found.";
         }
 
-        return result;
-    }
-
-    public async Task<ServiceResult<Users>> GetUserByIdAsync(string id)
-    {
-        ServiceResult<Users> result = new()
+        foreach (Users u in users)
         {
-            Data = await _db.Users.FirstOrDefaultAsync(u => u.Id == id)
-        };
-
-        if (result.Data == null)
-        {
-            result.Success = false;
-            result.Error = "User not found.";
+            result.Data.Add(new UserResult
+            {
+                Id = u.Id,
+                UserId = u.UserId,
+                UserName = u.UserName,
+                Email = u.Email,
+                Profile = u.Profile
+            });
         }
 
         return result;
     }
 
-    public async Task<ServiceResult<Users>> GetUserByUserIdAsync(string id)
+    public async Task<ServiceResult<UserResult>> GetUserByIdAsync(string id)
     {
-        ServiceResult<Users> result = new()
-        {
-            Data = await _db.Users.FirstOrDefaultAsync(u => u.UserId == id)
-        };
+        ServiceResult<UserResult> result = new();
 
-        if (result.Data == null)
+        Users? user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user == null)
         {
             result.Success = false;
             result.Error = "User not found.";
+            return result;
         }
+
+        result.Data = new UserResult
+        {
+            Id = user.Id,
+            UserId = user.UserId,
+            UserName = user.UserName,
+            Email = user.Email,
+            Profile = user.Profile
+        };
+
+        return result;
+    }
+
+    public async Task<ServiceResult<UserResult>> GetUserByUserIdAsync(string id)
+    {
+        ServiceResult<UserResult> result = new();
+
+        Users? user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == id);
+
+        if (user == null)
+        {
+            result.Success = false;
+            result.Error = "User not found.";
+            return result;
+        }
+
+        result.Data = new UserResult
+        {
+            Id = user.Id,
+            UserId = user.UserId,
+            UserName = user.UserName,
+            Email = user.Email,
+            Profile = user.Profile
+        };
 
         return result;
     }
