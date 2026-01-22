@@ -37,4 +37,23 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Logged in" });
     }
+
+    [HttpGet("Session")]
+    public async Task<IActionResult> CheckSession()
+    {
+        if (Request.Cookies.TryGetValue("auth_token", out string? authToken))
+        {
+            ServiceResult<string> result = await _service.CheckSession(authToken);
+
+            if (!result.Success)
+            {
+                return Unauthorized(new { Error = result.Error });
+            }
+            else
+            {
+                return Ok(new { Message = "Valid session", UserId = result.Data });
+            }
+        }
+        return Unauthorized(new { Error = "No valid session" });
+    }
 }

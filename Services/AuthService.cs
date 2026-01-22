@@ -79,5 +79,33 @@ namespace kumablogB.Services
             });
             return hashed;
         }
+
+        public async Task<ServiceResult<string>> CheckSession(string token)
+        {
+            ServiceResult<string> result = new();
+
+            Sessions? session = await _db.Sessions.FirstOrDefaultAsync(s => s.AuthToken == token);
+
+            if (session == null)
+            {
+                result.Success = false;
+                result.Error = "Invalid token.";
+                return result;
+            }
+
+            Users? users = await _db.Users.FirstOrDefaultAsync(u => u.Id == session.UserId && u.DeletedAt == null);
+
+            if (users == null)
+            {
+                result.Success = false;
+                result.Error = "User not found.";
+                return result;
+            }
+
+            result.Data = users.Id;
+
+            return result;
+        }
+            
     }
 }
