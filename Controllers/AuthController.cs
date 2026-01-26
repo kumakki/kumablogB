@@ -1,6 +1,7 @@
-﻿using kumablogB.Models;
+﻿using kumablogB.Common;
+using kumablogB.Models;
 using kumablogB.Services;
-using kumablogB.Common;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace kumablogB.Controllers;
@@ -19,10 +20,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login ([FromBody] LoginRequest request)
     {
-        ServiceResult<string> result = await _service.Login(request.UsernameOrEmail, request.Password);
-        if (!result.Success || result.Data == null)
+        (ServiceResult<LoginResult> result, string token) = await _service.Login(request.EmailOrUserId, request.Password);
+        if (!result.Success)
         {
-            return new UnauthorizedObjectResult(new { Error = result.Error });
+            return BadRequest(result);
         }
 
         CookieOptions cookieOptions = new CookieOptions
@@ -33,10 +34,10 @@ public class AuthController : ControllerBase
             Path = "/"
         };
 
-        Response.Cookies.Append("auth_token", result.Data, cookieOptions);
+        Response.Cookies.Append("auth_token", token, cookieOptions);
 
 
-        return Ok(new { message = "Logged in" });
+        return Ok(result);
     }
 
     [HttpGet("Session")]

@@ -14,14 +14,18 @@ namespace kumablogB.Services
             _db = db;
         }
 
-        public async Task<ServiceResult<string>> Login(string usernameOrEmail, string password)
+        public async Task<(ServiceResult<LoginResult>, string)> Login(string usernameOrEmail, string password)
         {
-            ServiceResult<string> result = new();
+            ServiceResult<LoginResult> result = new();
+            result.Data = new LoginResult();
+            string errorMessage = "Validation failed";
 
             if (string.IsNullOrEmpty(usernameOrEmail))
             {
                 result.Success = false;
-                result.Error = "Username or email is required.";
+                result.Error = errorMessage;
+                result.Data.ErrorEmailOrUserId = "メールアドレスまたはユーザーIDが違います。";
+                return (result, "");
             }
 
             Users? user = await _db.Users.FirstOrDefaultAsync(u => (u.UserName == usernameOrEmail || u.Email == usernameOrEmail) && u.DeletedAt == null);
@@ -29,8 +33,9 @@ namespace kumablogB.Services
             if (user == null)
             {
                 result.Success = false;
-                result.Error = "User not found.";
-                return result;
+                result.Error = errorMessage;
+                result.Data.ErrorEmailOrUserId = "メールアドレスまたはユーザーIDが違います。";
+                return (result, "");
             }
 
             string hashedPassword = await HashPassword(password);
@@ -38,8 +43,9 @@ namespace kumablogB.Services
             if (user.Password != hashedPassword)
             {
                 result.Success = false;
-                result.Error = "Incorrect password.";
-                return result;
+                result.Error = errorMessage;
+                result.Data.ErrorPassword = "パスワードが違います。";
+                return (result, "");
             }
 
             string token = $"auth_{Guid.NewGuid().ToString()}";
@@ -54,9 +60,7 @@ namespace kumablogB.Services
 
             await _db.SaveChangesAsync();
 
-            result.Data = token;
-
-            return result;
+            return (result, token);
         }
 
         public async Task<string> HashPassword(string password)
