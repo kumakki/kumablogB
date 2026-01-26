@@ -93,15 +93,18 @@ public class UserService
         return result;
     }
 
-    public async Task<ServiceResult<string>> CreateUserAsync(CreateUserRequest cur)
+    public async Task<ServiceResult<RegisterResult>> CreateUserAsync(CreateUserRequest cur)
     {
-        ServiceResult<string> result = new();
+        ServiceResult<RegisterResult> result = new();
         Users? user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == cur.UserId);
+        result.Data = new RegisterResult();
+        string errorMessage = "Validation failed";
 
         if (user != null)
         {
             result.Success = false;
-            result.Error = "UserId already exists.";
+            result.Error = errorMessage;
+            result.Data.ErrorUserId = "このユーザーIDは既に使用されています。";
             return result;
         }
 
@@ -110,14 +113,16 @@ public class UserService
         if (user != null)
         {
             result.Success = false;
-            result.Error = "Email already exists.";
+            result.Error = errorMessage;
+            result.Data.ErrorId = "このメールアドレスは既に使用されています。";
             return result;
         }
 
-        if (cur.Password.Length < 4)
+        if (cur.Password.Length < 4 || cur.Password.Length > 32)
         {
             result.Success = false;
-            result.Error = "Password must be at least 4 characters long.";
+            result.Error = errorMessage;
+            result.Data.ErrorPassword = "パスワードは4文字以上、32文字以下である必要があります。";
             return result;
         }
 
@@ -139,8 +144,6 @@ public class UserService
         _db.Users.Add(user);
 
         await _db.SaveChangesAsync();
-
-        result.Data = newUserId;
 
         return result;
     }

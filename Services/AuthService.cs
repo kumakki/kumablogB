@@ -47,7 +47,7 @@ namespace kumablogB.Services
             Sessions session = new()
             {
                 AuthToken = token,
-                UserId = user.UserId,
+                UserId = user.Id,
             };
 
             _db.Sessions.Add(session);

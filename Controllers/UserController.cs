@@ -21,20 +21,20 @@ public class UsersController : ControllerBase
     {
         if (id != null)
         {
-            ServiceResult<UserResult> user = await _service.GetUserByIdAsync(id);
-            if (user.Data == null) return NotFound("User not found.");
-            return Ok(user.Data);
+            ServiceResult<UserResult> result = await _service.GetUserByIdAsync(id);
+            if (result.Data == null) return NotFound("User not found.");
+            return Ok(result);
         }
         else if (userid != null)
         {
-            ServiceResult<UserResult> user = await _service.GetUserByUserIdAsync(userid);
-            if (user.Data == null) return NotFound("User not found.");
-            return Ok(user.Data);
+            ServiceResult<UserResult> result = await _service.GetUserByUserIdAsync(userid);
+            if (result.Data == null) return NotFound("User not found.");
+            return Ok(result);
         }
 
         ServiceResult<List<UserResult>> users = await _service.GetAllUsersAsync();
         if (users.Data == null || users.Data.Count == 0) return NotFound("No users found.");
-        return Ok(users.Data);
+        return Ok(users);
     }
 
     //[HttpGet]
@@ -58,9 +58,9 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest cur)
     {
-        ServiceResult<string> result = await _service.CreateUserAsync(cur);
-        if (!result.Success) return BadRequest(result.Error);
-        return Ok(result.Data);
+        ServiceResult<RegisterResult> result = await _service.CreateUserAsync(cur);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
     }
 
 

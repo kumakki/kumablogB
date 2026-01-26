@@ -29,7 +29,8 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,          // HTTPS のとき必須
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.Strict,
+            Path = "/"
         };
 
         Response.Cookies.Append("auth_token", result.Data, cookieOptions);

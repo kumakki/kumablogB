@@ -1,6 +1,6 @@
 ﻿namespace kumablogB.Common
 {
-    public class CreateUserRequest
+    public class RegisterRequest
     {
         public string Email { get; set; } = "";
         public string UserId { get; set; } = "";
